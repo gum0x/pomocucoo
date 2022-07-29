@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pomocoo</title>
+    <link ref="stylesheet" href="https://github.com/jgthms/bulma/blob/master/css/bulma.css" />
+    <link rel="stylesheet" href="index.css" />
+    <script defer src="app.js"></script>
+
+  </head>
+  <body>
+    <div id="top">
+    <div id="totalTime">
+      <div>
+        <label>Total time: </label>
+      <div id="lblTotalTime" class="totalTime-clock">00:00:00</div>
+      <input type="button" value="Stop" id="btnStop" disabled />
+
+    </div>
+    </div>
+    <div >
+      <p id="lblStatus" class="satusLabel"></p>
+    </div>
+  </div>
+  <div id="body">
+    <div id="stopwatch">
+      <!-- CURRENT TIME -->
+      
+      <div id="lblIntervalTime" class="digital-clock idle-clock">00:00:00</div>
+     
+      <!-- CONTROLS -->
+      <input type="button" value="Work" id="btnWork" disabled/>
+      <input type="button" value="Idle" id="btnIdle" disabled/>
+      <input type="button" value="Cooldown" id="btnCooldown" disabled/>
+      <input type="button" value="Interruption" id="btnInterruption" disabled/>
+      <input type="button" value="Emergency" id="btnEmergency" disabled/>
+    </div>
+    <div id="conf"></div>
+    <div>
+      <input type="number" value="55" id="inputPomodoroInterval" />
+      <label for="inputPomodoroInterval">Pomodoro Interval (min)</label>
+    </div>
+    <div>
+      <input type="number" value="5" id="inputCooldownInterval" />
+      <label for="inputCooldownInterval">Cooldown Interval (min)</label>
+    </div>
+  </div>
+    <audio id="audioPomodoroStart">
+      <source  src="media/pomodor-alarm.wav" type="audio/wav"/>
+    </audio> 
+    <audio id="audioQuarter">
+      <source  src="media/calm-intro.wav" type="audio/wav"/>
+    </audio> 
+    <audio id="audioPomodoroEnding">
+      <source  src="media/bells-low.wav" type="audio/wav"/>
+    </audio> 
+    
+  </body>
+</html>

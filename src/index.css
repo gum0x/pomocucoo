@@ -1,0 +1,70 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  margin: auto;
+  max-width: 38rem;
+  padding: 1rem;
+}
+
+/* Importing Open Sans Condensed Google font */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300&display=swap');
+
+.digital-clock {
+ width: 90%;
+ margin: auto;
+ padding-top: 4px;
+ padding-bottom: 4px;
+ font-family: 'Open Sans Condensed', sans-serif;
+ font-size: 64px;
+ text-align: center;
+ box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.idle-clock {
+  background-color: #fffffff8;
+  color: #000000f8;
+}
+
+.work-clock {
+  background-color: #000000f3;
+ color: #fffffff8;
+}
+
+.cooldown-clock {
+  background-color: #059900f3;
+  color: #000000f8;
+}
+
+.interruption-clock {
+  background-color: #ac051bf5;
+  color: #020000f8;
+}
+
+.totalTime-clock {
+  font-size: 12px;
+  text-align: left;
+  font-family: 'Open Sans Condensed', sans-serif;
+  position: relative;
+  left: 0px
+
+ 
+ }
+
+ .satusLabel {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  font-size: 18px;
+}
+
+#btnStop {
+  position: absolute;
+  top: 8px;
+  right: 50%;
+  font-size: 18px;
+  
+}
+
+.div #conf {
+  display: inline;
+}
