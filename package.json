@@ -1,8 +1,8 @@
 {
-  "name": "stopwatch",
-  "productName": "stopwatch",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "name": "pomocucoo",
+  "productName": "pomocucoo",
+  "version": "0.1.0",
+  "description": "Pomocuco is a pomodoro watch that will help you to keep focus on your tasks and keep track of your current work.",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",

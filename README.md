@@ -1,7 +1,6 @@
-# Pomodoro clock 
+# Pomocucoo
 
-# Cucoo cooldown
-Cucoo cooldown is a pomodoro timer that should help you to keep focus on your work and eventually to keep track of your spend time. 
+Pomocucoo is a pomodoro timer that should help you to keep focus on your work and eventually to keep track of your spend time. 
 
 Clock will split the time in pomodoro intervals, 55min by default, where your focus tends to be stronger. Cooldown intervals of 5 min are set by defaul to help you recover your concentration. 
 
@@ -40,8 +39,3 @@ v1
 
 v1.1
 [ ] stats: idle time, worked time, interruptions. Non respected pomodoros. 
-
-
-
-
-The goal of the clock is to help you keep focus on your tasks and don't loose track of your priorities. 
