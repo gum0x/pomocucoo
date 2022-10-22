@@ -1,8 +1,23 @@
-# Pomocucoo
+# Tomodoro (former Pomocucoo)
 
-Pomocucoo is a pomodoro timer that should help you to keep focus on your work and eventually to keep track of your spend time. 
+Tomodoro is a pomodoro timer that should help you to keep focus on your work and eventually to keep track of your spend time. 
 
 Clock will split the time in pomodoro intervals, 55min by default, where your focus tends to be stronger. Cooldown intervals of 5 min are set by defaul to help you recover your concentration. 
+
+# Development
+
+```
+
+npm i
+npm run start
+```
+
+Build the packages (on each system)
+```
+npm run make
+``` 
+It only makes the binary for the current platform. 
+
 
 # Roadmap
 
@@ -12,29 +27,43 @@ v0.1
 [x] Cooldown end notification. 
 
 v0.2
-[ ] internal clock based on date management instead of counter. This avoids application to stop counting on sleep. 
+[x] internal clock based on date diff instead of counter. This avoids application to stop counting on sleep. 
+[x] cooldown intervale setter fix
+[x] ~~Support for linux~~ 
+
 
 v0.3
-[ ] Pause feature
-[ ] automatic idle feature on screen sleep. 
+[ ] Tasks history
+[ ] history extraction
+[ ] Task input popup on status finished
 
 v0.4
-[ ] All windows, on top feature
+[ ] Interruption mode. Like emergency mode, where current work state is running bellow, but there is a prioitary task on top. 
+[ ] Shortcut to manage current task
+[ ] Reset feature
+
+
+vX.X
+[ ] pipeline to cross build, package and publication on github. 
 
 v0.5
+
+[ ] automatic idle feature on screen sleep. 
+[ ] All windows, on top feature
+[ ] volume, mute, mute next notif and stop playing music
+[ ] customize alerts
+
+v0.6 
+[ ] Pause feature
 [ ] transparent when mouse over or move away from current
 [ ] Shortcuts to manage states
 
-v0.6 
-[ ] Focus BOX 
-[ ] history
-[ ] Shortcut to manage current task
-
 v0.7
 [ ] pleasant look and feel.
+[ ] default settings
 
 v1
-[ ] Support for linux
+[x] ~~Support for linux~~
 [ ] Support for windows
 
 v1.1

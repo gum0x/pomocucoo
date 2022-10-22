@@ -15,6 +15,7 @@ var app = {
         audioQuarter : null, //html quarter sweet notification. 
         audioPomodoroEnding : null, // html pomodoro's ends notification
     },
+    watch : null,
     opt : {
         cooldownMins : 5, // time interval for break in mins
         pomodoroQuarterNotification : 15, // counter to notify every 15 min. 
@@ -31,6 +32,7 @@ var app = {
     state : "stop",
     stateHistory : [],
 };
+
 
 // status init
 // where application starts
@@ -71,9 +73,31 @@ async function init() {
     
 
     app.state = await stop();
+    app.
 
     console.log("Watch initiated");
 };
+
+function cents2sec(millis){
+    secs = millis / 1000
+    return Math.trunc(secs)
+};
+
+let watch = {
+    _ts_init:null,
+    _ts_main_task:null,
+    _ts_secondary_task:null,
+    _ts_idle:null,
+    _ts_cool_down:null,
+    _ts_now:()=>new Date(),
+    totalPomodoro: (watch) => { return watch._ts_init ? cents2sec(watch._ts_now() - watch._ts_init) : 0 },
+    mainTaskPomodoro: (watch) => { return watch._ts_main_task ? cents2sec(watch._ts_now() - watch._ts_main_task) : 0 },
+    secondTaskPomodoro: (watch) => { return watch._ts_secondary_task ? cents2sec(watch._ts_now() - watch._secondary_task) : 0 },
+    idleTimePomodoro: (watch) => { return watch._ts_idle ? cents2sec(watch._ts_now()- watch._ts_idle) : 0 },
+    coolDownPomodoro: (watch) => { return watch._ts_cool_down ? cents2sec(watch._ts_now() - watch._ts_idle ) : 0 },
+};
+
+
 async function updateWatch() {
 
     e.lblTotalTime.innerHTML = getTime(app.totalCntr);
@@ -83,8 +107,10 @@ async function updateWatch() {
 
 // heartbeat
 async function tick() {
-    app.totalCntr++;
-    app.pomodoroCntr++;
+    app.pomodoroCntr=watch.mainTaskPomodoro(watch);
+    
+    if(!watch._ts_init){ watch._ts_init = new Date()}
+    app.totalCntr=watch.totalPomodoro(watch);
 
     await updateWatch();
     await checkState();
@@ -107,11 +133,11 @@ async function checkState() {
     }  
     
     if (app.state == "cooldown"){
-        if (app.pomodoroCntr >=  ( (app.opt.cooldownMins * 60) - 20) ) {
+        if (app.pomodoroCntr >=  ( (e.inputCooldownInterval.value * 60) - 20) ) {
             await playPomodoroEnding();
         }
 
-        if (app.pomodoroCntr >=  app.opt.cooldownMins * 60) {
+        if (app.pomodoroCntr >= e.inputCooldownInterval.value * 60) {
             await playQuarter()
             await workState();
         }
@@ -121,10 +147,10 @@ async function checkState() {
 
 // start PomodorCtr
 async function startPomodoro() {
-    app.pomodoroCntr = 0;
+    watch._ts_main_task = new Date();
     
     if (!app.timer) {
-        app.timer = setInterval(tick, 1000);
+        app.timer = setInterval(tick, 100);
     }
 }
 
@@ -132,7 +158,7 @@ async function startPomodoro() {
 // Status work_on
 async function workState(reset=true) {
     if(reset) {
-        app.pomodoroCntr = 0;
+        watch._ts_main_task = null;
         await updateWatch();
     }
     app.state = "work";
@@ -144,7 +170,7 @@ async function workState(reset=true) {
 // status idle brake
 async function idleState(reset=true) {
     if(reset) {
-        app.pomodoroCntr = 0;
+        app._ts_idle = null;
         await updateWatch();
     }
     app.state = "idle";
@@ -170,7 +196,7 @@ async function playPomodoroEnding() {
 // status pomodoro break
 async function cooldownState(reset=true) {
     if(reset) {
-        app.pomodoroCntr = 0;
+        watch._ts_cool_down = null;
         await updateWatch();
     }
     app.state = "cooldown";
