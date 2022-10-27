@@ -68,3 +68,16 @@ body {
 .div #conf {
   display: inline;
 }
+
+#muteIcon {
+  margin: 0 2.5%;
+  position: absolute;
+  right: 20px;
+  width: 25px;
+  height: 25px;
+}
+
+
+.numberSelector{
+  width: 30px;
+}
