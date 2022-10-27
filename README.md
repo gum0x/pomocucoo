@@ -36,6 +36,8 @@ v0.3
 [ ] Tasks history
 [ ] history extraction
 [ ] Task input popup on status finished
+[x] volume, mute, mute next notif and stop playing music
+
 
 v0.4
 [ ] Interruption mode. Like emergency mode, where current work state is running bellow, but there is a prioitary task on top. 
@@ -50,7 +52,6 @@ v0.5
 
 [ ] automatic idle feature on screen sleep. 
 [ ] All windows, on top feature
-[ ] volume, mute, mute next notif and stop playing music
 [ ] customize alerts
 
 v0.6 

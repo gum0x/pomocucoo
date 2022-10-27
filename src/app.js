@@ -49,10 +49,15 @@ async function init() {
     e.btnStop = document.getElementById("btnStop");
     e.inputPomodoroInterval = document.getElementById("inputPomodoroInterval");
     e.inputCooldownInterval = document.getElementById("inputCooldownInterval");
-    e.audioPomodoroStart = document.getElementById("audioPomodoroStart");
-    e.audioQuarter = document.getElementById("audioQuarter");
-    e.audioPomodoroEnding = document.getElementById("audioPomodoroEnding");
-    
+    e.audioPlayer = document.getElementById("audioPlayer");
+    // e.audioPomodoroStart = document.getElementById("audioPomodoroStart");
+    // e.audioQuarter = document.getElementById("audioQuarter");
+    // e.audioPomodoroEnding = document.getElementById("audioPomodoroEnding");
+    e.muteIcon = document.getElementById("muteIcon");
+    app.player = e.audioPlayer;
+    e.muteIcon.onclick = function() {unMute()};
+
+
 
     e.btnWork.disabled = false;
     e.btnIdle.disabled = false;
@@ -73,7 +78,7 @@ async function init() {
     
 
     app.state = await stop();
-    app.
+    
 
     console.log("Watch initiated");
 };
@@ -182,15 +187,41 @@ async function idleState(reset=true) {
 
 // status autoPomodorBreak
 async function playPomodoroStart() {
-    e.audioPomodoroStart.play();
+    if (app.player.paused){
+        app.player.src="media/pomodoro-alarm.wav";
+        app.player.load();
+        await app.player.play();
+    }
+
 }
 
 async function playQuarter() {
-    e.audioQuarter.play();
+    if (app.player.paused){
+        app.player.src="media/calm-intro.wav";
+        app.player.load();
+        await app.player.play();
+    }
 }
 
 async function playPomodoroEnding() {
-    e.audioPomodoroEnding.play();
+    if (app.player.paused){
+        app.player.src="media/bells-low.wav";
+        app.player.load();
+        await app.player.play();
+    }
+}
+
+function mute() {
+    e.muteIcon.src="icons/mute.png";
+    e.muteIcon.onclick = function() {unMute();};
+    app.player.volume = 0.05;
+    
+}
+
+function unMute() {
+    e.muteIcon.src="icons/volume.png";
+    e.muteIcon.onclick = function () {mute();};
+    app.player.volume = 0.5;
 }
 
 // status pomodoro break

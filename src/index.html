@@ -35,25 +35,24 @@
       <input type="button" value="Interruption" id="btnInterruption" disabled/>
       <input type="button" value="Emergency" id="btnEmergency" disabled/>
     </div>
-    <div id="conf"></div>
+    <div id="conf">
     <div>
-      <input type="number" value="55" id="inputPomodoroInterval" />
+      <input id="muteIcon" type="image" src="icons/volume.png"/> 
+    </div>
+    <div>
+      <input class="numberSelector" type="number" value="55" id="inputPomodoroInterval" />
       <label for="inputPomodoroInterval">Pomodoro Interval (min)</label>
     </div>
     <div>
-      <input type="number" value="5" id="inputCooldownInterval" />
+      <input class="numberSelector" type="number" value="5" id="inputCooldownInterval" />
       <label for="inputCooldownInterval">Cooldown Interval (min)</label>
     </div>
+    <div>
+      <audio id="audioPlayer">
+        <source src="media/pomodoro-alarm.wav" type="audio/wav"/> 
+      </audio>
+    </div>
   </div>
-    <audio id="audioPomodoroStart">
-      <source  src="media/pomodor-alarm.wav" type="audio/wav"/>
-    </audio> 
-    <audio id="audioQuarter">
-      <source  src="media/calm-intro.wav" type="audio/wav"/>
-    </audio> 
-    <audio id="audioPomodoroEnding">
-      <source  src="media/bells-low.wav" type="audio/wav"/>
-    </audio> 
     
   </body>
 </html>
