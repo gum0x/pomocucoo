@@ -15,7 +15,7 @@ body {
  padding-top: 4px;
  padding-bottom: 4px;
  font-family: 'Open Sans Condensed', sans-serif;
- font-size: 64px;
+ font-size: 48px;
  text-align: center;
  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
@@ -59,9 +59,7 @@ body {
 
 #btnStop {
   position: absolute;
-  top: 8px;
-  right: 50%;
-  font-size: 18px;
+  margin: 5px; 
   
 }
 
@@ -80,4 +78,45 @@ body {
 
 .numberSelector{
   width: 30px;
+}
+
+input#inputTask {
+  width: 98%;
+  margin: auto;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 30px;
+  text-align: center;
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+}
+
+.taskUpdated {
+  color: #2d961ff8;
+
+}
+
+.taskNonUpdated {
+  color: #aa0909f8;
+
+}
+
+div#clockControls {
+  position: absolute;
+  left: 30%; 
+  top: 5%;
+  display: block;
+
+}
+
+label#lblHistory {
+  width: 98%;
+  margin: auto;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 12px;
+  text-align: center;
+  border: #000000f3, 1px;
+
 }

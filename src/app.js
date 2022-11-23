@@ -34,6 +34,35 @@ var app = {
 };
 
 
+var persistence = window.localStorage;
+
+var store = {
+    currentTaskId: null,
+    addTask: (task) => {
+        // const array = new Uint32Array(10);    
+        // store.currentTaskId = Math.random().toString(36).substring(2,16);
+        store.currentTaskId = new Date();
+        taskObj = {
+            ts: store.currentTaskId,
+            end_ts: null,
+            name: task
+        }
+        persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
+    },
+    updateTask: (task) => {
+        taskObj = JSON.parse(persistence.getItem(store.currentTaskId));
+        taskObj['name'] = task;
+        persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
+    },
+    endCurrentTask: () => {
+        taskObj = JSON.stringify(persistence.getItem(store.currentTaskId));
+        taskObj['end_ts'] = new Date(),
+        persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
+
+    }
+
+}
+
 // status init
 // where application starts
 async function init() {
@@ -50,9 +79,27 @@ async function init() {
     e.inputPomodoroInterval = document.getElementById("inputPomodoroInterval");
     e.inputCooldownInterval = document.getElementById("inputCooldownInterval");
     e.audioPlayer = document.getElementById("audioPlayer");
+    e.inputTask = document.getElementById("inputTask");
+    e.btnUpdateState = document.getElementById("btnUpdateState");
+    e.lblHistory = document.getElementById("lblHistory");
     // e.audioPomodoroStart = document.getElementById("audioPomodoroStart");
     // e.audioQuarter = document.getElementById("audioQuarter");
     // e.audioPomodoroEnding = document.getElementById("audioPomodoroEnding");
+    // e.btnUpdateState.onclick = () => {store.updateTask(e.inputTask.value)};
+    e.inputTask.addEventListener('change', () => {
+        store.updateTask(e.inputTask.value);
+        e.inputTask.className = "taskUpdated";
+        renderHistory();
+    });
+
+    e.inputTask.addEventListener('input', () => {
+        e.inputTask.className = "taskNonUpdated";
+        renderHistory();
+    });
+
+    renderHistory();
+
+
     e.muteIcon = document.getElementById("muteIcon");
     app.player = e.audioPlayer;
     e.muteIcon.onclick = function() {unMute()};
@@ -68,7 +115,7 @@ async function init() {
 
     e.btnInterruption.style.visibility = "hidden";
     e.btnEmergency.style.visibility = "hidden";
-    e.btnStop.style.visibility = "hidden";
+    // s.btnStop.style.visibility = "hidden";
 
     e.btnWork.onclick = workState;
     e.btnIdle.onclick = idleState;
@@ -104,7 +151,6 @@ let watch = {
 
 
 async function updateWatch() {
-
     e.lblTotalTime.innerHTML = getTime(app.totalCntr);
     e.lblIntervalTime.innerHTML = getTime(app.pomodoroCntr);
 
@@ -169,6 +215,7 @@ async function workState(reset=true) {
     app.state = "work";
     e.lblStatus.innerHTML = "Work!";
     e.lblIntervalTime.className = "digital-clock work-clock";
+    store.addTask(e.inputTask.value);
     await startPomodoro();
     switchBtn(e.btnWork);
 }
@@ -283,6 +330,16 @@ function switchBtn(btn) {
     (e.btnInterruption === btn) ? e.btnInterruption.disabled = true : e.btnInterruption.disabled = false; 
     (e.btnEmergency === btn) ? e.btnEmergency.disabled = true : e.btnEmergency.disabled = false;     
     
+}
+
+function renderHistory() {
+    e.lblHistory.innerHTML = "";
+    for(i=0;i<persistence.length;i++){
+        key = persistence.key(i);
+        task = JSON.parse(persistence.getItem(key));
+        e.lblHistory.innerHTML += `${task.ts} - ${task.name}</br>`
+        
+    }
 }
 
 
