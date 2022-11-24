@@ -1,72 +1,91 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Tomodoro</title>
-    <link ref="stylesheet" href="https://github.com/jgthms/bulma/blob/master/css/bulma.css" />
-    <link rel="stylesheet" href="index.css" />
-    <script defer src="app.js"></script>
 
-  </head>
-  <body>
-    <div id="top">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tomodoro</title>
+  <link ref="stylesheet" href="https://github.com/jgthms/bulma/blob/master/css/bulma.css" />
+  <link rel="stylesheet" href="index.css" />
+  <script defer src="app.js"></script>
+
+</head>
+
+<body>
+  <div id="top">
     <div id="totalTime">
       <div>
         <label>Total time: </label>
-      <div id="lblTotalTime" class="totalTime-clock">00:00:00</div>
-      <input type="button" value="Stop" id="btnStop" disabled />
+        <div id="lblTotalTime" class="totalTime-clock">00:00:00</div>
+        <input type="button" value="Stop" id="btnStop" disabled />
 
-<!-- CONTROLS -->
-<div id="clockControls">
-  <input type="button" value="Work" id="btnWork" disabled/>
-  <input type="button" value="Idle" id="btnIdle" disabled/>
-  <input type="button" value="Cooldown" id="btnCooldown" disabled/>
-  <input type="button" value="Interruption" id="btnInterruption" disabled/>
-  <input type="button" value="Emergency" id="btnEmergency" disabled/>
-</div>
+        <!-- CONTROLS -->
+        <div id="clockControls">
+          <input type="button" value="Work" id="btnWork" disabled />
+          <input type="button" value="Idle" id="btnIdle" disabled />
+          <input type="button" value="Cooldown" id="btnCooldown" disabled />
+          <input type="button" value="Interruption" id="btnInterruption" disabled />
+          <input type="button" value="Emergency" id="btnEmergency" disabled />
+        </div>
+      </div>
     </div>
+    <div id="conf">
+      <div>
+        <input id="muteIcon" type="image" src="icons/volume.png" />
+      </div>
+      <div>
+        <input class="numberSelector" type="number" value="55" id="inputPomodoroInterval" />
+        <!-- <label for="inputPomodoroInterval">Pomodoro Interval (min)</label> -->
+      </div>
+      <div>
+        <input class="numberSelector" type="number" value="5" id="inputCooldownInterval" />
+        <!-- <label for="inputCooldownInterval">Cooldown Interval (min)</label> -->
+      </div>
+      <div>
+        <audio id="audioPlayer">
+          <source src="media/pomodoro-alarm.wav" type="audio/wav" />
+        </audio>
+      </div>
     </div>
-      
-    <div >
+
+    <!-- <div >
       <p id="lblStatus" class="satusLabel"></p>
-    </div>
+    </div> -->
   </div>
   <div id="body">
     <div id="stopwatch">
-     
-    
+
+
       <!-- CURRENT TIME -->
-      
+
       <div id="lblIntervalTime" class="digital-clock idle-clock">00:00:00</div>
       <div id="taskNameInput" class="task">
-        <input type="text" value="Starting routine" id="inputTask"/>
+        <input type="text" value="Starting routine" id="inputTask" />
         <!-- <input type="button" value="Update" id="btnUpdateState" disabled/> -->
       </div>
-     
+
     </div>
-    <div id="conf">
-    <div>
-      <input id="muteIcon" type="image" src="icons/volume.png"/> 
+
+    <div id="divHistory">
+      <table id="tableHistory">
+
+
+        <thead>
+          <th>Time</th>
+          <th>Duration</th>
+          <th>Task</th>
+        </thead>
+        <tbody id="tbHistory">
+          <tr>
+            <td>0000</td>
+            <td>5m</td>
+            <td>Task</td>
+          </tr>
+
+        </tbody>
+
+      </table>
     </div>
-    <div>
-      <input class="numberSelector" type="number" value="55" id="inputPomodoroInterval" />
-      <label for="inputPomodoroInterval">Pomodoro Interval (min)</label>
-    </div>
-    <div>
-      <input class="numberSelector" type="number" value="5" id="inputCooldownInterval" />
-      <label for="inputCooldownInterval">Cooldown Interval (min)</label>
-    </div>
-    <div>
-      <audio id="audioPlayer">
-        <source src="media/pomodoro-alarm.wav" type="audio/wav"/> 
-      </audio>
-    </div>
-  </div>
-  <div id="divHistory">
-    <label>History</label>
-    </br>
-    <label id="lblHistory"></label>
-  </div>
-    
-  </body>
+
+</body>
+
 </html>

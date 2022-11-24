@@ -3,21 +3,53 @@ body {
     Arial, sans-serif;
   margin: auto;
   max-width: 38rem;
-  padding: 1rem;
+  padding: 5px;
+  display: block;
+}
+
+.totalTime-clock {
+  font-size: 12px;
+  text-align: left;
+  font-family: 'Open Sans Condensed', sans-serif;
+  position: relative;
+  left: 0px
+}
+
+.satusLabel {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  font-size: 18px;
+}
+
+#btnStop {
+  position: absolute;
+  margin: 5px;
+
+}
+
+div#clockControls {
+  position: absolute;
+  left: 30%;
+  top: 2%;
+  display: block;
+
 }
 
 /* Importing Open Sans Condensed Google font */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300&display=swap');
 
 .digital-clock {
- width: 90%;
- margin: auto;
- padding-top: 4px;
- padding-bottom: 4px;
- font-family: 'Open Sans Condensed', sans-serif;
- font-size: 48px;
- text-align: center;
- box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  width: 70%;
+  position: absolute;
+  left: 15%;
+  /* margin: auto; */
+  /* padding-top: 1px; */
+  /* padding-bottom: 1px; */
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 36px;
+  text-align: center;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .idle-clock {
@@ -27,7 +59,7 @@ body {
 
 .work-clock {
   background-color: #000000f3;
- color: #fffffff8;
+  color: #fffffff8;
 }
 
 .cooldown-clock {
@@ -40,56 +72,41 @@ body {
   color: #020000f8;
 }
 
-.totalTime-clock {
-  font-size: 12px;
-  text-align: left;
-  font-family: 'Open Sans Condensed', sans-serif;
-  position: relative;
-  left: 0px
-
- 
- }
-
- .satusLabel {
-  position: absolute;
-  top: 8px;
-  right: 16px;
-  font-size: 18px;
-}
-
-#btnStop {
-  position: absolute;
-  margin: 5px; 
-  
-}
-
-.div #conf {
+div#conf {
   display: inline;
+  position: absolute;
+  right: 2px;
+  top: 1px;
 }
 
 #muteIcon {
-  margin: 0 2.5%;
-  position: absolute;
-  right: 20px;
+  /* margin: 0 2.5%; */
+  /* position: absolute;
+  right: 50px; */
   width: 25px;
   height: 25px;
 }
 
-
-.numberSelector{
-  width: 30px;
+div#taskNameInput {
+  position: relative;
+  top: 40px;
 }
 
 input#inputTask {
   width: 98%;
-  margin: auto;
   padding-top: 4px;
   padding-bottom: 4px;
   font-family: 'Open Sans Condensed', sans-serif;
-  font-size: 30px;
+  font-size: 24px;
   text-align: center;
   box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
 }
+
+
+.numberSelector {
+  width: 30px;
+}
+
 
 .taskUpdated {
   color: #2d961ff8;
@@ -101,15 +118,10 @@ input#inputTask {
 
 }
 
-div#clockControls {
-  position: absolute;
-  left: 30%; 
-  top: 5%;
-  display: block;
 
-}
-
-label#lblHistory {
+div#divHistory {
+  position: relative;
+  top: 35px;
   width: 98%;
   margin: auto;
   padding-top: 4px;
@@ -118,5 +130,35 @@ label#lblHistory {
   font-size: 12px;
   text-align: center;
   border: #000000f3, 1px;
+
+}
+
+table {
+  width: 100%;
+  border: 3px;
+}
+
+thead {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+
+tbody {
+  display: block;
+  width: 100%;
+  height: 113px;
+  overflow-y: visible;
+  /* Trigger vertical scroll    */
+  overflow-x: hidden;
+  /* Hide the horizontal scroll */
+}
+
+tbody td,
+thead th {
+  width: 100px;
+  /* Optional */
+  text-align: left;
 
 }

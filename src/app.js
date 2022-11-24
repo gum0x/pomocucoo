@@ -2,7 +2,7 @@ var app = {
     elem : {
         lblTotalTime : null, // html total time display
         lblIntervalTime : null, // html time for current interval display
-        lblStatus : null, // html status label
+        // lblStatus : null, // html status label
         btnWork : null, // html reset button
         btnIdle : null, // html button for idle state. Like launch or even closing. 
         btnCooldown : null, // html button for the pomodoro state
@@ -69,7 +69,7 @@ async function init() {
     e = app.elem;
     e.lblTotalTime = document.getElementById("lblTotalTime");
     e.lblIntervalTime = document.getElementById("lblIntervalTime");
-    e.lblStatus = document.getElementById("lblStatus");
+    // e.lblStatus = document.getElementById("lblStatus");
     e.btnWork = document.getElementById("btnWork");
     e.btnIdle = document.getElementById("btnIdle");
     e.btnCooldown = document.getElementById("btnCooldown");
@@ -81,7 +81,7 @@ async function init() {
     e.audioPlayer = document.getElementById("audioPlayer");
     e.inputTask = document.getElementById("inputTask");
     e.btnUpdateState = document.getElementById("btnUpdateState");
-    e.lblHistory = document.getElementById("lblHistory");
+    e.tbHistory = document.getElementById("tbHistory");
     // e.audioPomodoroStart = document.getElementById("audioPomodoroStart");
     // e.audioQuarter = document.getElementById("audioQuarter");
     // e.audioPomodoroEnding = document.getElementById("audioPomodoroEnding");
@@ -213,7 +213,7 @@ async function workState(reset=true) {
         await updateWatch();
     }
     app.state = "work";
-    e.lblStatus.innerHTML = "Work!";
+    // e.lblStatus.innerHTML = "Work!";
     e.lblIntervalTime.className = "digital-clock work-clock";
     store.addTask(e.inputTask.value);
     await startPomodoro();
@@ -226,7 +226,7 @@ async function idleState(reset=true) {
         await updateWatch();
     }
     app.state = "idle";
-    e.lblStatus.innerHTML = "Idle...";
+    // e.lblStatus.innerHTML = "Idle...";
     e.lblIntervalTime.className = "digital-clock idle-clock";
     await startPomodoro();
     switchBtn(e.btnIdle);
@@ -278,7 +278,7 @@ async function cooldownState(reset=true) {
         await updateWatch();
     }
     app.state = "cooldown";
-    e.lblStatus.innerHTML = "Cool Down...";
+    // e.lblStatus.innerHTML = "Cool Down...";
     e.lblIntervalTime.className = "digital-clock cooldown-clock";
     await startPomodoro();
     switchBtn(e.btnCooldown);
@@ -297,7 +297,7 @@ async function emergencyState() {
 
 // status stop 
 async function stop() {
-    e.lblStatus.innerHTML = "Idle";
+    // e.lblStatus.innerHTML = "Idle";
     e.lblIntervalTime.className = "digital-clock idle-clock"
 
 }
@@ -333,13 +333,29 @@ function switchBtn(btn) {
 }
 
 function renderHistory() {
-    e.lblHistory.innerHTML = "";
+    e.tbHistory.innerHTML = "";
     for(i=0;i<persistence.length;i++){
         key = persistence.key(i);
         task = JSON.parse(persistence.getItem(key));
-        e.lblHistory.innerHTML += `${task.ts} - ${task.name}</br>`
-        
+        e.tbHistory.appendChild(renderTaskRow(task));
     }
+}
+
+function renderTaskRow(taskObj) {
+    let row = document.createElement('tr');
+    let timeCell = document.createElement('td');
+    let durationCell = document.createElement('td');
+    let taskCell = document.createElement('td');
+    [timeCell, durationCell, taskCell].forEach(element => {
+        row.appendChild(element);
+    }); 
+    row.className=".item";
+
+    timeCell.innerHTML = taskObj.ts;
+    durationCell.innerHTML = "5m";
+    taskCell.innerHTML = taskObj.name;
+    return row;
+    
 }
 
 
