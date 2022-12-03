@@ -31,6 +31,7 @@ var app = {
     interruptionCntr : 0, // time in secconds that are being interrupted. 
     state : "stop",
     stateHistory : [],
+    continue: false
 };
 
 
@@ -59,6 +60,13 @@ var store = {
         taskObj['end_ts'] = new Date(),
         persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
 
+    },
+    getCurrentTask: () => {
+        return JSON.stringify(persistence.getItem(store.currentTaskId));
+        
+    },
+    reset: ()  => {
+        persistence.clear()
     }
 
 }
@@ -122,6 +130,7 @@ async function init() {
     e.btnCooldown.onclick = cooldownState;
     e.btnInterruption.onclick = interruptionState;
     e.btnEmergency.onclick = emergencyState;
+    e.btnStop.onclick = stop;
     
 
     app.state = await stop();
@@ -147,6 +156,10 @@ let watch = {
     secondTaskPomodoro: (watch) => { return watch._ts_secondary_task ? cents2sec(watch._ts_now() - watch._secondary_task) : 0 },
     idleTimePomodoro: (watch) => { return watch._ts_idle ? cents2sec(watch._ts_now()- watch._ts_idle) : 0 },
     coolDownPomodoro: (watch) => { return watch._ts_cool_down ? cents2sec(watch._ts_now() - watch._ts_idle ) : 0 },
+    reset: () => {
+        _ts_init = null;
+        _ts_main_task = null;
+    }
 };
 
 
@@ -167,6 +180,16 @@ async function tick() {
     await checkState();
 };
 
+ function popupCloseTask(taskObj, newStateFunction) {
+    if( app.continue == false && confirm(`Time's up! Did you finishwd "${taskObj.name}"?`) ){
+        newStateFunction();
+    }else{
+        app.continue = true;
+        extendedWorkState();
+    }
+}
+
+
 async function checkState() {
     // On work state, play quarter music. 
     if (app.pomodoroCntr % (app.opt.pomodoroQuarterNotification * 60) == 0) {
@@ -174,9 +197,9 @@ async function checkState() {
     }
 
     if (app.state == "work") {
-        if (app.pomodoroCntr >= e.inputPomodoroInterval.value * 60 ){
+        if (app.pomodoroCntr == e.inputPomodoroInterval.value * 60 ){
             await playPomodoroStart();
-            await cooldownState();
+            popupCloseTask(store.getCurrentTask(),cooldownState);
 
         }
         return 
@@ -184,13 +207,13 @@ async function checkState() {
     }  
     
     if (app.state == "cooldown"){
-        if (app.pomodoroCntr >=  ( (e.inputCooldownInterval.value * 60) - 20) ) {
+        if (app.pomodoroCntr ==  ( (e.inputCooldownInterval.value * 60) - 20) ) {
             await playPomodoroEnding();
         }
 
-        if (app.pomodoroCntr >= e.inputCooldownInterval.value * 60) {
+        if (app.pomodoroCntr == e.inputCooldownInterval.value * 60) {
             await playQuarter()
-            await workState();
+            popupCloseTask(store.getCurrentTask(), workState);
         }
         return 
     } 
@@ -212,10 +235,14 @@ async function workState(reset=true) {
         watch._ts_main_task = null;
         await updateWatch();
     }
+    app.continue = false;
     app.state = "work";
     // e.lblStatus.innerHTML = "Work!";
     e.lblIntervalTime.className = "digital-clock work-clock";
+    e.inputTask.value = "New task";
     store.addTask(e.inputTask.value);
+    renderHistory();
+    e.inputTask.focus();
     await startPomodoro();
     switchBtn(e.btnWork);
 }
@@ -224,13 +251,52 @@ async function idleState(reset=true) {
     if(reset) {
         app._ts_idle = null;
         await updateWatch();
+        store.endCurrentTask();
     }
+    app.continue = false;
     app.state = "idle";
     // e.lblStatus.innerHTML = "Idle...";
     e.lblIntervalTime.className = "digital-clock idle-clock";
+    e.inputTask.value = "Idle";
+    store.addTask(e.inputTask.value);
+    renderHistory();
     await startPomodoro();
     switchBtn(e.btnIdle);
 }
+
+// status work extended
+async function extendedWorkState() {
+    e.lblIntervalTime.className = "digital-clock extendedWork-clock";
+}
+
+// status pomodoro break
+async function cooldownState(reset=true) {
+    if(reset) {
+        watch._ts_cool_down = null;
+        await updateWatch();
+    }
+    app.continue = false;
+    app.state = "cooldown";
+    // e.lblStatus.innerHTML = "Cool Down...";
+    e.lblIntervalTime.className = "digital-clock cooldown-clock";
+    e.inputTask.value = "Cooldown";
+    store.addTask(e.inputTask.value);
+    renderHistory();
+    await startPomodoro();
+    switchBtn(e.btnCooldown);
+
+}
+// status interruption
+// this is a paralel state that counts number of interruption
+// and time spend on them. 
+async function interruptionState() {
+
+}
+// status emergency
+async function emergencyState() {
+
+}
+
 
 // status autoPomodorBreak
 async function playPomodoroStart() {
@@ -271,34 +337,18 @@ function unMute() {
     app.player.volume = 0.5;
 }
 
-// status pomodoro break
-async function cooldownState(reset=true) {
-    if(reset) {
-        watch._ts_cool_down = null;
-        await updateWatch();
-    }
-    app.state = "cooldown";
-    // e.lblStatus.innerHTML = "Cool Down...";
-    e.lblIntervalTime.className = "digital-clock cooldown-clock";
-    await startPomodoro();
-    switchBtn(e.btnCooldown);
-
-}
-// status interruption
-// this is a paralel state that counts number of interruption
-// and time spend on them. 
-async function interruptionState() {
-
-}
-// status emergency
-async function emergencyState() {
-
-}
-
 // status stop 
 async function stop() {
     // e.lblStatus.innerHTML = "Idle";
-    e.lblIntervalTime.className = "digital-clock idle-clock"
+    clearInterval(app.timer);
+    app.timer = null; 
+    watch.reset();
+    e.lblIntervalTime.className = "digital-clock idle-clock";
+    e.inputTask.value = "Idle";
+    store.reset();
+    e.btnWork.disabled = false;
+    e.btnIdle.disabled = false;
+    e.btnCooldown.disabled = false;
 
 }
 
@@ -312,9 +362,7 @@ function getTime(time) {
         mins = Math.floor(remain / 60);
         remain -= mins * 60;
         secs = remain;
-        
-
-       
+          
         // (E2) UPDATE THE DISPLAY TIMER
         if (hours<10) { hours = "0" + hours; }
         if (mins<10) { mins = "0" + mins; }
@@ -324,7 +372,7 @@ function getTime(time) {
 
 // 
 function switchBtn(btn) {
-    (e.btnWork === btn) ? e.btnWork.disabled = true : e.btnWork.disabled = false; 
+    (e.btnWork === btn) ? e.btnWork.value = "New" : e.btnWork.value = "Work"; 
     (e.btnIdle === btn) ? e.btnIdle.disabled = true : e.btnIdle.disabled = false; 
     (e.btnCooldown === btn) ? e.btnCooldown.disabled = true : e.btnCooldown.disabled = false; 
     (e.btnInterruption === btn) ? e.btnInterruption.disabled = true : e.btnInterruption.disabled = false; 

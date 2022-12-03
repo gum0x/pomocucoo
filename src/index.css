@@ -62,6 +62,11 @@ div#clockControls {
   color: #fffffff8;
 }
 
+.extendedWork-clock {
+  background-color: #e9700df3;
+  color: #fffffff8;
+}
+
 .cooldown-clock {
   background-color: #059900f3;
   color: #000000f8;
