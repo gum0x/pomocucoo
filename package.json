@@ -1,7 +1,7 @@
 {
   "name": "tomodoro",
   "productName": "tomodoro",
-  "version": "0.3.0-snapshot202211230832",
+  "version": "0.3.0-snapshot202212020943",
   "description": "Tomodoro is a pomodoro watch that will help you to keep focus on your tasks and keep track of your current work.",
   "main": "src/index.js",
   "scripts": {
@@ -48,11 +48,11 @@
     "electron-squirrel-startup": "^1.0.0"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.65",
-    "@electron-forge/maker-deb": "^6.0.0-beta.65",
+    "@electron-forge/cli": "^6.0.4",
+    "@electron-forge/maker-deb": "^6.0.4",
     "@electron-forge/maker-rpm": "^6.0.0-beta.65",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.65",
     "@electron-forge/maker-zip": "^6.0.0-beta.65",
-    "electron": "^19.0.10"
+    "electron": "^19.1.9"
   }
 }
