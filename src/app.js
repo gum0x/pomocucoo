@@ -45,7 +45,7 @@ var store = {
         store.currentTaskId = new Date();
         taskObj = {
             ts: store.currentTaskId,
-            end_ts: null,
+	    ts_end: null,
             name: task
         }
         persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
@@ -56,9 +56,11 @@ var store = {
         persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
     },
     endCurrentTask: () => {
-        taskObj = JSON.stringify(persistence.getItem(store.currentTaskId));
-        taskObj['end_ts'] = new Date(),
-        persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
+	if (store.currentTaskId) {
+          taskObj = JSON.parse(persistence.getItem(store.currentTaskId));
+          taskObj['ts_end'] = new Date(),
+          persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
+	}
 
     },
     getCurrentTask: () => {
@@ -66,7 +68,8 @@ var store = {
         
     },
     reset: ()  => {
-        persistence.clear()
+        persistence.clear();
+	store.currentTaskId = null;
     }
 
 }
@@ -156,6 +159,7 @@ let watch = {
     secondTaskPomodoro: (watch) => { return watch._ts_secondary_task ? cents2sec(watch._ts_now() - watch._secondary_task) : 0 },
     idleTimePomodoro: (watch) => { return watch._ts_idle ? cents2sec(watch._ts_now()- watch._ts_idle) : 0 },
     coolDownPomodoro: (watch) => { return watch._ts_cool_down ? cents2sec(watch._ts_now() - watch._ts_idle ) : 0 },
+    timeDiff: (ts_start, ts_end) => { return cents2sec(new Date(ts_end) - new Date(ts_start)) },
     reset: () => {
         _ts_init = null;
         _ts_main_task = null;
@@ -240,6 +244,9 @@ async function workState(reset=true) {
     // e.lblStatus.innerHTML = "Work!";
     e.lblIntervalTime.className = "digital-clock work-clock";
     e.inputTask.value = "New task";
+    if (store.currentTaskId) {
+        store.endCurrentTask();
+    }
     store.addTask(e.inputTask.value);
     renderHistory();
     e.inputTask.focus();
@@ -258,6 +265,7 @@ async function idleState(reset=true) {
     // e.lblStatus.innerHTML = "Idle...";
     e.lblIntervalTime.className = "digital-clock idle-clock";
     e.inputTask.value = "Idle";
+    store.endCurrentTask();
     store.addTask(e.inputTask.value);
     renderHistory();
     await startPomodoro();
@@ -280,6 +288,7 @@ async function cooldownState(reset=true) {
     // e.lblStatus.innerHTML = "Cool Down...";
     e.lblIntervalTime.className = "digital-clock cooldown-clock";
     e.inputTask.value = "Cooldown";
+    store.endCurrentTask();
     store.addTask(e.inputTask.value);
     renderHistory();
     await startPomodoro();
@@ -400,7 +409,7 @@ function renderTaskRow(taskObj) {
     row.className=".item";
 
     timeCell.innerHTML = taskObj.ts;
-    durationCell.innerHTML = "5m";
+    (taskObj.ts_end) ? durationCell.innerHTML = (watch.timeDiff(taskObj.ts, taskObj.ts_end)/60).toFixed(2) + "m" : durationCell.innerHTML = "ONGOING";
     taskCell.innerHTML = taskObj.name;
     return row;
     
