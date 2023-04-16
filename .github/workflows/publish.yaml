@@ -1,7 +1,9 @@
 name: Publish
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+
 jobs:
-  pub:
+  build:
     runs-on: macos-latest
     steps:
       - name: Check out Git repository
