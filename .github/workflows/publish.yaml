@@ -29,8 +29,8 @@ jobs:
           #     draft: true
           #     prerelease: false
 
-    - uses: actions/upload-artifact@v3
-      with:
-        name: tomodoro.zip
-        path: ./out/make/zip/**/**/tomodoro-**.zip
+      - uses: actions/upload-artifact@v3
+        with:
+          name: tomodoro.zip
+          path: ./out/make/zip/**/**/tomodoro-**.zip
 
