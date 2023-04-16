@@ -1,7 +1,7 @@
+name: Publish
 on: workflow_dispatch
-
 jobs:
-  publish-version:
+  publish:
     runs-on: ${{ matrix.os }}
 
     strategy:
