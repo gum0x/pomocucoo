@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        version: [macos-latest, windows-latest, ubuntu-latest]
+        os: [macos-latest, windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out Git repository
