@@ -403,10 +403,14 @@ function switchBtn(btn) {
 
 function renderHistory() {
     e.tbHistory.innerHTML = "";
-    for(i=0;i<persistence.length;i++){
-        key = persistence.key(i);
-        task = JSON.parse(persistence.getItem(key));
-        e.tbHistory.appendChild(renderTaskRow(task));
+    if (persistence.length > 0) {
+        const sorted = Object.keys(persistence).sort(function (a, b) {if (a<b){return -1}else if(a>b){return 1}})
+
+        for(i=0;i<sorted.length;i++){
+            key = sorted[i];
+            task = JSON.parse(persistence.getItem(key));
+            e.tbHistory.appendChild(renderTaskRow(task));
+        }
     }
 }
 
