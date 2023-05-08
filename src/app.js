@@ -64,7 +64,7 @@ var store = {
 
     },
     getCurrentTask: () => {
-        return JSON.stringify(persistence.getItem(store.currentTaskId));
+        return JSON.parse(persistence.getItem(store.currentTaskId));
         
     },
     reset: ()  => {
