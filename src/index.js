@@ -1,5 +1,6 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
+const { windowsStore } = require('process');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line global-require
@@ -28,6 +29,30 @@ const createWindow = () => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools({mode: 'detach'});
+
+  mainWindow.webContents.setWindowOpenHandler(() => {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          width: 300,
+          height: 200,
+          alwaysOnTop: true,
+          // frame: false,
+          fullscreenable: false,
+          // backgroundColor: 'black',
+          webPreferences: {
+            // preload: path.join(__dirname, 'popup.js')
+          }
+        }
+      }
+  })
+
+  mainWindow.webContents.on("did-create-window", (window, details) => {
+    window.webContents.once("dom-ready", () => window.webContents.openDevTools({mode: 'detach'}));
+    window.webContents.once("destroyed", () => mainWindow.focus());
+  });
+  
+
 };
 
 // This method will be called when Electron has finished

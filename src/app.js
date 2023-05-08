@@ -185,12 +185,24 @@ async function tick() {
 };
 
  function popupCloseTask(taskObj, newStateFunction) {
-    if( app.continue == false && confirm(`Time's up! Did you finishwd "${taskObj.name}"?`) ){
-        newStateFunction();
-    }else{
-        app.continue = true;
-        extendedWorkState();
-    }
+    const popup = window.open("relax.html","Time_Finished", 'width=300,height=150,scrollbars=no');
+    popup.addEventListener("DOMContentLoaded", () => {
+        const datadiv = popup.document.getElementById("data");
+        const tittle = document.createElement("p");
+        tittle.innerText = "Task: " + taskObj.name
+        const time = document.createElement("p");
+        time.innerText = "Started: " + taskObj.ts;
+        datadiv.appendChild(tittle);
+        datadiv.appendChild(time);
+    })
+    
+    popup.focus();
+    // if( app.continue == false && confirm(`Time's up! Did you finishwd "${taskObj.name}"?`) ){
+    //     newStateFunction();
+    // }else{
+    //     app.continue = true;
+    //     extendedWorkState();s
+    // }
 }
 
 
