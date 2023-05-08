@@ -45,7 +45,7 @@ var store = {
         store.currentTaskId = new Date();
         taskObj = {
             ts: store.currentTaskId,
-	    ts_end: null,
+	        ts_end: null,
             name: task
         }
         persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
@@ -203,7 +203,7 @@ async function checkState() {
     if (app.state == "work") {
         if (app.pomodoroCntr == e.inputPomodoroInterval.value * 60 ){
             await playPomodoroStart();
-            popupCloseTask(store.getCurrentTask(),cooldownState);
+            popupCloseTask(store.getCurrentTask(), cooldownState);
 
         }
         return 
