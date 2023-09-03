@@ -136,7 +136,7 @@ async function init() {
     e.btnStop.onclick = stop;
     
 
-    app.state = await stop();
+    app.state = await stop(reset=false);
     
 
     console.log("Watch initiated");
@@ -359,14 +359,16 @@ function unMute() {
 }
 
 // status stop 
-async function stop() {
+async function stop(reset) {
     // e.lblStatus.innerHTML = "Idle";
     clearInterval(app.timer);
     app.timer = null; 
     watch.reset();
     e.lblIntervalTime.className = "digital-clock idle-clock";
     e.inputTask.value = "Idle";
-    store.reset();
+    if(reset){
+        store.reset();
+    }
     e.btnWork.disabled = false;
     e.btnIdle.disabled = false;
     e.btnCooldown.disabled = false;
