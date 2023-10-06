@@ -1,3 +1,6 @@
+//Core
+var persistence = window.localStorage;
+
 var app = {
     elem : {
         lblTotalTime : null, // html total time display
@@ -15,7 +18,6 @@ var app = {
         audioQuarter : null, //html quarter sweet notification. 
         audioPomodoroEnding : null, // html pomodoro's ends notification
     },
-    watch : null,
     opt : {
         cooldownMins : 5, // time interval for break in mins
         pomodoroQuarterNotification : 15, // counter to notify every 15 min. 
@@ -26,50 +28,94 @@ var app = {
     },
 
     timer : null, // timer object
-    totalCntr : 0, // current elapsed time
-    pomodoroCntr : 0, // current counter for pomodoro next alarm
+    // totalCntr : 0, // current elapsed time
+    // pomodoroCntr : 0, // current counter for pomodoro next alarm
     interruptionCntr : 0, // time in secconds that are being interrupted. 
     state : "stop",
     stateHistory : [],
-    continue: false
+    continue: false,
+    currentTaskObj: null,
+    taskNameUpdated: true
+
 };
 
-
-var persistence = window.localStorage;
-
+//TODO: split store and store controller. 
 var store = {
-    currentTaskId: null,
-    addTask: (task) => {
+    // currentTaskId: () => {
+    //     if (persistence.length > 0) {
+    //         const sorted = Object.keys(persistence).sort(function (a, b) {if (a<b){return -1}else if(a>b){return 1}})
+    //         return sorted[sorted.length - 1]['ts'];
+    //     } else {
+    //         return null;
+    //     }
+    // },
+    currentTaskId: () => {
+        return persistence.getItem("currentTaskId") ? persistence.getItem("currentTaskId") : null;
+    },
+    setCurrentTaskId: (taskId) => {
+        persistence.setItem("currentTaskId", taskId);
+    },
+    saveCurrentTask: () => {
+        persistence.setItem("currentTaskObj", JSON.stringify(app.currentTaskObj));
+    },
+    restoreCurrentTask: () =>  {
+        app.currentTaskObj = JSON.parse(persistence.getItem("currentTaskObj"));
+    },
+    status: () => {
+        let task = store.getCurrentTask();
+        if(task) {
+            return task["status"];
+        }
+        return null;
+    },
+    addTask: (task, status) => {
         // const array = new Uint32Array(10);    
         // store.currentTaskId = Math.random().toString(36).substring(2,16);
-        store.currentTaskId = new Date();
-        taskObj = {
-            ts: store.currentTaskId,
+        store.setCurrentTaskId(new Date());
+        historyObj = persistence.getItem("history")
+        var taskList = historyObj ? JSON.parse(historyObj) : {};
+        app.currentTaskObj = {
+            ts: store.currentTaskId(),
 	        ts_end: null,
-            name: task
-        }
-        persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
+            name: task,
+            status: status
+        };
+        taskList[app.currentTaskObj["ts"]] = app.currentTaskObj;
+        persistence.setItem("history",JSON.stringify(taskList));
+        persistence.setItem("status", status);
+        store.saveCurrentTask();
+        watch.saveWatchState();
     },
-    updateTask: (task) => {
-        taskObj = JSON.parse(persistence.getItem(store.currentTaskId));
-        taskObj['name'] = task;
-        persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
+    updateCurrentTask: (taskName) => {
+        var taskList = JSON.parse(persistence.getItem("history"));
+        app.currentTaskObj["name"] = taskName;
+        taskList[store.currentTaskId()] = app.currentTaskObj;
+        persistence.setItem("history",JSON.stringify(taskList));
+        store.saveCurrentTask();
+        watch.saveWatchState();
     },
     endCurrentTask: () => {
-	if (store.currentTaskId) {
-          taskObj = JSON.parse(persistence.getItem(store.currentTaskId));
-          taskObj['ts_end'] = new Date(),
-          persistence.setItem(store.currentTaskId,JSON.stringify(taskObj));
-	}
-
+        if (store.currentTaskId()) {
+            var taskList = JSON.parse(persistence.getItem("history"));
+            app.currentTaskObj['ts_end'] = new Date();
+            taskList[app.currentTaskObj["ts"]]  = app.currentTaskObj;
+            persistence.setItem("history",JSON.stringify(taskList));
+            store.saveCurrentTask();
+            watch.saveWatchState();
+        };
     },
     getCurrentTask: () => {
-        return JSON.parse(persistence.getItem(store.currentTaskId));
-        
+        let taskList = JSON.parse(persistence.getItem("history"));
+        return taskList ? taskList[store.currentTaskId()] : null;        
+    },
+    getHistory: () => {
+        taskList = JSON.parse(persistence.getItem("history"));
+        return taskList ? taskList : null;
     },
     reset: ()  => {
         persistence.clear();
-	store.currentTaskId = null;
+        app.currentTaskObj = null;
+	    //store.currentTaskId = null;
     }
 
 }
@@ -98,9 +144,10 @@ async function init() {
     // e.audioPomodoroEnding = document.getElementById("audioPomodoroEnding");
     // e.btnUpdateState.onclick = () => {store.updateTask(e.inputTask.value)};
     e.inputTask.addEventListener('change', () => {
-        store.updateTask(e.inputTask.value);
+        store.updateCurrentTask(e.inputTask.value);
         e.inputTask.className = "taskUpdated";
         renderHistory();
+        renderCurrentTask();
     });
 
     e.inputTask.addEventListener('input', () => {
@@ -108,14 +155,9 @@ async function init() {
         renderHistory();
     });
 
-    renderHistory();
-
-
     e.muteIcon = document.getElementById("muteIcon");
     app.player = e.audioPlayer;
     e.muteIcon.onclick = function() {unMute()};
-
-
 
     e.btnWork.disabled = false;
     e.btnIdle.disabled = false;
@@ -134,11 +176,23 @@ async function init() {
     e.btnInterruption.onclick = interruptionState;
     e.btnEmergency.onclick = emergencyState;
     e.btnStop.onclick = stop;
-    
 
-    app.state = await stop(reset=false);
+    app.currentTaskObj = store.getCurrentTask()
     
+    //store.recoverState();
+    //TODO: rebuild the tick() function to run allways and 
+    // set up the state as defined on store.status
+    if(app.currentTaskObj){
+        watch.restoreWatchTime();
+        app.state = app.currentTaskObj["status"];
+        app.timer = setInterval(tick, 100);
+    } else {
+        watch.saveWatchState();
+    }
 
+    renderHistory();
+    renderCurrentTask();
+   
     console.log("Watch initiated");
 };
 
@@ -153,6 +207,8 @@ let watch = {
     _ts_secondary_task:null,
     _ts_idle:null,
     _ts_cool_down:null,
+    _pomodoroCntrCache: null,
+    _pomodoroTotalCntrCache: null,
     _ts_now:()=>new Date(),
     totalPomodoro: (watch) => { return watch._ts_init ? cents2sec(watch._ts_now() - watch._ts_init) : 0 },
     mainTaskPomodoro: (watch) => { return watch._ts_main_task ? cents2sec(watch._ts_now() - watch._ts_main_task) : 0 },
@@ -163,71 +219,53 @@ let watch = {
     reset: () => {
         _ts_init = null;
         _ts_main_task = null;
-    }
+    },
+    restoreWatchTime: () => {
+        watch._ts_init = new Date(persistence.getItem("initTime"));
+        watch._ts_main_task = new Date(persistence.getItem("mainTaskTime"));
+    },
+    saveWatchState: () => {
+        persistence.setItem("initTime", watch._ts_init);
+        persistence.setItem("mainTaskTime", watch._ts_main_task)
+    },
 };
 
-
-async function updateWatch() {
-    e.lblTotalTime.innerHTML = getTime(app.totalCntr);
-    e.lblIntervalTime.innerHTML = getTime(app.pomodoroCntr);
-
-}
-
-// heartbeat
+//TODO: should this be the core function? 
+// how this deals with the fact that sometimes we want the clock being stopped?
 async function tick() {
-    app.pomodoroCntr=watch.mainTaskPomodoro(watch);
+    watch._pomodoroCntrCache=watch.mainTaskPomodoro(watch);
     
     if(!watch._ts_init){ watch._ts_init = new Date()}
-    app.totalCntr=watch.totalPomodoro(watch);
+    watch._pomodoroTotalCntrCache=watch.totalPomodoro(watch);
 
-    await updateWatch();
     await checkState();
+    // No need to render everything
+    await renderClock();
+
 };
 
- function popupCloseTask(taskObj, newStateFunction) {
-    const popup = window.open("relax.html","Time_Finished", 'width=300,height=150,scrollbars=no');
-    popup.addEventListener("DOMContentLoaded", () => {
-        const datadiv = popup.document.getElementById("data");
-        const tittle = document.createElement("p");
-        tittle.innerText = "Task: " + taskObj.name
-        const time = document.createElement("p");
-        time.innerText = "Started: " + taskObj.ts;
-        datadiv.appendChild(tittle);
-        datadiv.appendChild(time);
-    })
-    
-    popup.focus();
-    // if( app.continue == false && confirm(`Time's up! Did you finishwd "${taskObj.name}"?`) ){
-    //     newStateFunction();
-    // }else{
-    //     app.continue = true;
-    //     extendedWorkState();s
-    // }
-}
-
-
+//TODO: rethink this as mix core with UI
 async function checkState() {
     // On work state, play quarter music. 
-    if (app.pomodoroCntr % (app.opt.pomodoroQuarterNotification * 60) == 0) {
+    if (watch._pomodoroCntrCache % (app.opt.pomodoroQuarterNotification * 60) == 0) {
         await playQuarter();
     }
 
     if (app.state == "work") {
-        if (app.pomodoroCntr == e.inputPomodoroInterval.value * 60 ){
+        if (watch._pomodoroCntrCache == e.inputPomodoroInterval.value * 60 ){
             await playPomodoroStart();
             popupCloseTask(store.getCurrentTask(), cooldownState);
 
         }
         return 
-        
     }  
     
     if (app.state == "cooldown"){
-        if (app.pomodoroCntr ==  ( (e.inputCooldownInterval.value * 60) - 20) ) {
+        if (watch._pomodoroCntrCache ==  ( (e.inputCooldownInterval.value * 60) - 20) ) {
             await playPomodoroEnding();
         }
 
-        if (app.pomodoroCntr == e.inputCooldownInterval.value * 60) {
+        if (watch._pomodoroCntrCache == e.inputCooldownInterval.value * 60) {
             await playQuarter()
             popupCloseTask(store.getCurrentTask(), workState);
         }
@@ -235,7 +273,6 @@ async function checkState() {
     } 
 }
 
-// start PomodorCtr
 async function startPomodoro() {
     watch._ts_main_task = new Date();
     
@@ -244,80 +281,42 @@ async function startPomodoro() {
     }
 }
 
-
-// Status work_on
-async function workState(reset=true) {
-    if(reset) {
-        watch._ts_main_task = null;
-        await updateWatch();
-    }
-    app.continue = false;
-    app.state = "work";
-    // e.lblStatus.innerHTML = "Work!";
-    e.lblIntervalTime.className = "digital-clock work-clock";
-    e.inputTask.value = "New task";
-    if (store.currentTaskId) {
-        store.endCurrentTask();
-    }
-    store.addTask(e.inputTask.value);
-    renderHistory();
-    e.inputTask.focus();
-    await startPomodoro();
-    switchBtn(e.btnWork);
-}
-// status idle brake
-async function idleState(reset=true) {
-    if(reset) {
-        app._ts_idle = null;
-        await updateWatch();
-        store.endCurrentTask();
-    }
-    app.continue = false;
-    app.state = "idle";
-    // e.lblStatus.innerHTML = "Idle...";
+//TODO: stop for stopping the clock only. Add button for reset
+async function stop(reset) {
+    // e.lblStatus.innerHTML = "Idle";
+    clearInterval(app.timer);
+    app.timer = null; 
+    watch.reset();
     e.lblIntervalTime.className = "digital-clock idle-clock";
     e.inputTask.value = "Idle";
-    store.endCurrentTask();
-    store.addTask(e.inputTask.value);
-    renderHistory();
-    await startPomodoro();
-    switchBtn(e.btnIdle);
-}
-
-// status work extended
-async function extendedWorkState() {
-    e.lblIntervalTime.className = "digital-clock extendedWork-clock";
-}
-
-// status pomodoro break
-async function cooldownState(reset=true) {
-    if(reset) {
-        watch._ts_cool_down = null;
-        await updateWatch();
+    if(reset){
+        store.reset();
     }
-    app.continue = false;
-    app.state = "cooldown";
-    // e.lblStatus.innerHTML = "Cool Down...";
-    e.lblIntervalTime.className = "digital-clock cooldown-clock";
-    e.inputTask.value = "Cooldown";
-    store.endCurrentTask();
-    store.addTask(e.inputTask.value);
-    renderHistory();
-    await startPomodoro();
-    switchBtn(e.btnCooldown);
-
-}
-// status interruption
-// this is a paralel state that counts number of interruption
-// and time spend on them. 
-async function interruptionState() {
-
-}
-// status emergency
-async function emergencyState() {
+    e.btnWork.disabled = false;
+    e.btnIdle.disabled = false;
+    e.btnCooldown.disabled = false;
 
 }
 
+function getTime(time) {
+    // getTime convert seconds to hours:mins:sec
+    let hours = 0, mins = 0, secs = 0, decis = 0;
+        remain = time;
+        hours = Math.floor(remain / 3600);
+        remain -= hours * 3600;
+        mins = Math.floor(remain / 60);
+        remain -= mins * 60;
+        secs = remain;
+          
+        // (E2) UPDATE THE DISPLAY TIMER
+        if (hours<10) { hours = "0" + hours; }
+        if (mins<10) { mins = "0" + mins; }
+        if (secs<10) { secs = "0" + secs; }
+        return hours + ":" + mins + ":" + secs;
+}
+
+
+//AUDIO CONTROL
 
 // status autoPomodorBreak
 async function playPomodoroStart() {
@@ -358,42 +357,110 @@ function unMute() {
     app.player.volume = 0.5;
 }
 
-// status stop 
-async function stop(reset) {
-    // e.lblStatus.innerHTML = "Idle";
-    clearInterval(app.timer);
-    app.timer = null; 
-    watch.reset();
+//UI
+async function renderClock() {
+    e.lblTotalTime.innerHTML = getTime(watch._pomodoroTotalCntrCache);
+    e.lblIntervalTime.innerHTML = getTime(watch._pomodoroCntrCache);
+}
+
+
+function popupCloseTask(taskObj, newStateFunction) {
+    const popup = window.open("relax.html","Time_Finished", 'width=300,height=150,scrollbars=no');
+    popup.addEventListener("DOMContentLoaded", () => {
+        const datadiv = popup.document.getElementById("data");
+        const tittle = document.createElement("p");
+        tittle.innerText = "Task: " + taskObj.name
+        const time = document.createElement("p");
+        time.innerText = "Started: " + taskObj.ts;
+        datadiv.appendChild(tittle);
+        datadiv.appendChild(time);
+    })
+    
+    popup.focus();
+    // if( app.continue == false && confirm(`Time's up! Did you finishwd "${taskObj.name}"?`) ){
+    //     newStateFunction();
+    // }else{
+    //     app.continue = true;
+    //     extendedWorkState();s
+    // }
+}
+
+//TODO: rethink this as mixes UI with core
+async function workState(reset=true) {
+    let lastTask = store.getCurrentTask();
+
+    if(reset) {
+        watch._ts_main_task = null;
+        e.inputTask.value = "New Task";
+        await renderClock();
+    } else {
+        store.restoreCurrentTask();
+        watch.restoreWatchTime();
+         
+    }
+    app.continue = false;
+    app.state = "work";
+    e.lblIntervalTime.className = "digital-clock work-clock";
+    if (store.currentTaskId()) {
+        store.endCurrentTask();
+    }
+    store.addTask(e.inputTask.value, app.state);
+    renderHistory();
+    e.inputTask.focus();
+    await startPomodoro();
+    switchBtn(e.btnWork);
+}
+
+async function idleState(reset=true) {
+    if(reset) {
+        app._ts_idle = null;
+        await renderClock();
+        store.endCurrentTask();
+    }
+    app.continue = false;
+    app.state = "idle";
+    // e.lblStatus.innerHTML = "Idle...";
     e.lblIntervalTime.className = "digital-clock idle-clock";
     e.inputTask.value = "Idle";
-    if(reset){
-        store.reset();
+    store.endCurrentTask();
+    store.addTask(e.inputTask.value, app.state);
+    renderHistory();
+    await startPomodoro();
+    switchBtn(e.btnIdle);
+}
+
+async function extendedWorkState() {
+    e.lblIntervalTime.className = "digital-clock extendedWork-clock";
+}
+
+async function cooldownState(reset=true) {
+    if(reset) {
+        watch._ts_cool_down = null;
+        await renderClock();
     }
-    e.btnWork.disabled = false;
-    e.btnIdle.disabled = false;
-    e.btnCooldown.disabled = false;
+    app.continue = false;
+    app.state = "cooldown";
+    // e.lblStatus.innerHTML = "Cool Down...";
+    e.lblIntervalTime.className = "digital-clock cooldown-clock";
+    e.inputTask.value = "Cooldown";
+    store.endCurrentTask();
+    store.addTask(e.inputTask.value, app.state);
+    renderHistory();
+    await startPomodoro();
+    switchBtn(e.btnCooldown);
 
 }
+// status interruption
+// this is a paralel state that counts number of interruption
+// and time spend on them. 
+async function interruptionState() {
 
-
-// getTime convert seconds to hours:mins:sec
-function getTime(time) {
-    let hours = 0, mins = 0, secs = 0, decis = 0;
-        remain = time;
-        hours = Math.floor(remain / 3600);
-        remain -= hours * 3600;
-        mins = Math.floor(remain / 60);
-        remain -= mins * 60;
-        secs = remain;
-          
-        // (E2) UPDATE THE DISPLAY TIMER
-        if (hours<10) { hours = "0" + hours; }
-        if (mins<10) { mins = "0" + mins; }
-        if (secs<10) { secs = "0" + secs; }
-        return hours + ":" + mins + ":" + secs;
 }
+// status emergency
+async function emergencyState() {
 
-// 
+}
+ 
 function switchBtn(btn) {
     (e.btnWork === btn) ? e.btnWork.value = "New" : e.btnWork.value = "Work"; 
     (e.btnIdle === btn) ? e.btnIdle.disabled = true : e.btnIdle.disabled = false; 
@@ -403,14 +470,25 @@ function switchBtn(btn) {
     
 }
 
-function renderHistory() {
+async function render() {
+    await renderClock();
+    await renderHistory();
+}
+
+function renderCurrentTask() {
+    e.inputTask.value = app.currentTaskObj ? app.currentTaskObj["name"]: "Start new task";
+}
+function renderHistory() {    
     e.tbHistory.innerHTML = "";
-    if (persistence.length > 0) {
-        const sorted = Object.keys(persistence).sort(function (a, b) {if (a<b){return -1}else if(a>b){return 1}})
+    var history = store.getHistory();
+    if (history) {
+        const sorted = Object.keys(history).sort(function (a, b) {if (a<b){return -1}else if(a>b){return 1}})
 
         for(i=0;i<sorted.length;i++){
+            //let key= Date()
             key = sorted[i];
-            task = JSON.parse(persistence.getItem(key));
+            //task = JSON.parse(history[key]);
+            task = history[key];
             e.tbHistory.appendChild(renderTaskRow(task));
         }
     }
@@ -424,15 +502,21 @@ function renderTaskRow(taskObj) {
     [timeCell, durationCell, taskCell].forEach(element => {
         row.appendChild(element);
     }); 
-    row.className=".item";
 
-    timeCell.innerHTML = taskObj.ts;
-    (taskObj.ts_end) ? durationCell.innerHTML = (watch.timeDiff(taskObj.ts, taskObj.ts_end)/60).toFixed(2) + "m" : durationCell.innerHTML = "ONGOING";
+    startTime = new Date(taskObj.ts)
+    timeCell.innerHTML = startTime.toISOString();
+    if (taskObj.ts_end) {
+        row.className="item";
+        durationCell.innerHTML = (watch.timeDiff(taskObj.ts, taskObj.ts_end)/60).toFixed(2) + " m"  ;
+    } else {
+        row.className = "ongoing";
+        durationCell.innerHTML = "ONGOING";
+        
+    }
     taskCell.innerHTML = taskObj.name;
     return row;
     
 }
-
 
 // start
 init();

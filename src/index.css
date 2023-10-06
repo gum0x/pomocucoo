@@ -167,3 +167,7 @@ thead th {
   text-align: left;
 
 }
+
+.ongoing {
+  background-color: lightseagreen;
+}
