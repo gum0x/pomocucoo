@@ -29,8 +29,6 @@ jobs:
         with:
           name: tomodoro ${{ matrix.os }}
           path: |
-            ./out/make/linux/x64/tomodoro-**.zip
-            ./out/make/darwin/x64/tomodoro-**.zip
-            ./out/make/darwin/arm64/tomodoro-**.zip
+            ./out/make/zip/**/**/tomodoro-**.zip
             .\out\make\squirrel.windows\x64\**.exe
 
