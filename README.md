@@ -34,25 +34,23 @@ v0.2
 
 v0.3
 [x] Tasks history
-[ ] history extraction
-[ ] Task input popup on status finished
-[x] Task end popup to conitnue working. 
-[ ] extended time period notification
+[ ] Task end popup to conitnue working. 
 [x] volume, mute, mute next notif and stop playing music
-[x] Reset feature
+[ ] Stop feature
+[ ] Reset feature
 
 
 
-v0.4
+Backlog
 [ ] Interruption mode. Like emergency mode, where current work state is running bellow, but there is a prioitary task on top. 
 [ ] Shortcut to manage current task
 [ ] task table edition
 [ ] Vulnerability management pipeline
 [ ] Static code analisys pipeline
-
-
-vX.X
 [ ] pipeline to cross build, package and publication on github. 
+[ ] history extraction
+[ ] extended time period notification
+[ ] Task input popup on status finished
 
 v0.5
 
