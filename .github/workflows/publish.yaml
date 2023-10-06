@@ -27,5 +27,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          path: ./out/make/zip/**/**/tomodoro-**.zip
+          path: |
+            ./out/make/zip/**/**/tomodoro-**.zip
+            .\out\make\zip\**\**\tomodoro-**.zip
 
