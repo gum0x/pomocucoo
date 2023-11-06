@@ -32,13 +32,38 @@ v0.2
 [x] ~~Support for linux~~ 
 
 
-v0.3
+v0.3.1
 [x] Tasks history
-[ ] Task end popup to conitnue working. 
+[~] Task end popup to conitnue working. 
 [x] volume, mute, mute next notif and stop playing music
 [ ] Stop feature
-[ ] Reset feature
+[x] Reset feature
 
+v0.3.2
+[~] Task end popup to conitnue working. 
+[ ] Stop feature
+[x] Fix size and scrolling on history box
+
+v0.4
+[ ] automatic idle feature on screen sleep. 
+[ ] All windows, on top feature
+[ ] customize alerts
+
+v0.5
+[ ] Pause feature
+[ ] transparent when mouse over or move away from current
+[ ] Shortcuts to manage states
+
+v0.6
+[ ] pleasant look and feel.
+[ ] default settings
+
+v1
+[x] ~~Support for linux~~
+[ ] Support for windows
+
+v1.1
+[ ] stats: idle time, worked time, interruptions. Non respected pomodoros. 
 
 
 Backlog
@@ -51,25 +76,3 @@ Backlog
 [ ] history extraction
 [ ] extended time period notification
 [ ] Task input popup on status finished
-
-v0.5
-
-[ ] automatic idle feature on screen sleep. 
-[ ] All windows, on top feature
-[ ] customize alerts
-
-v0.6 
-[ ] Pause feature
-[ ] transparent when mouse over or move away from current
-[ ] Shortcuts to manage states
-
-v0.7
-[ ] pleasant look and feel.
-[ ] default settings
-
-v1
-[x] ~~Support for linux~~
-[ ] Support for windows
-
-v1.1
-[ ] stats: idle time, worked time, interruptions. Non respected pomodoros. 

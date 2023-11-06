@@ -1,7 +1,7 @@
 {
   "name": "tomodoro",
   "productName": "tomodoro",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Tomodoro is a pomodoro watch that will help you to keep focus on your tasks and keep track of your current work.",
   "main": "src/index.js",
   "scripts": {

@@ -151,9 +151,8 @@ thead {
 
 
 tbody {
-  display: block;
+  display: table;
   width: 100%;
-  height: 113px;
   overflow-y: visible;
   /* Trigger vertical scroll    */
   overflow-x: hidden;
@@ -166,6 +165,14 @@ thead th {
   /* Optional */
   text-align: left;
 
+}
+
+td:nth-child(1), th:nth-child(1) {
+  width: 15%;
+}
+
+td:nth-child(2), th:nth-child(2) {
+  width: 15%;
 }
 
 .ongoing {
